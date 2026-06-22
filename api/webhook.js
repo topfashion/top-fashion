@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const openRouterApiKey = process.env.GEMINI_API_KEY; // Берём новый API-ключ OpenRouter из кабинета Vercel
+  const openRouterApiKey = process.env.GEMINI_API_KEY;
 
   if (userText === '/start') {
     await sendTelegramMessage(chatId, "Привет! Я умный помощник детской модельной школы развития. Задайте мне любой вопрос о направлениях обучения, расписании, ценах или записи на пробное занятие.", botToken);
@@ -48,7 +48,7 @@ async function getOpenRouterResponse(prompt, apiKey) {
 - Контакты: телефон +7 (999) 123-45-67, Instagram @example_model_school.
 - Частые вопросы: Родителям присутствовать на занятиях нельзя, чтобы дети не отвлекались. В конце каждого курса мы проводим отчетный показ и выдаем фирменный сертификат.`;
 
-  // Запрос идет через надежный мост OpenRouter к бесплатной и стабильной модели google/gemini-2.5-flash-lite
+  // Мы заменили модель на гарантированно бесплатную Llama 3.1 от Meta
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -56,7 +56,7 @@ async function getOpenRouterResponse(prompt, apiKey) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash-lite",
+      model: "meta-llama/llama-3.1-8b-instruct:free",
       messages: [
         { role: "system", content: systemInstruction },
         { role: "user", content: prompt }
@@ -66,7 +66,7 @@ async function getOpenRouterResponse(prompt, apiKey) {
 
   const data = await response.json();
   
-  console.error("ОТВЕТ ОТ OPENROUTER:", JSON.stringify(data, null, 2));
+  console.error("ОТВЕТ ОТ LLAМА:", JSON.stringify(data, null, 2));
 
   if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
     return data.choices[0].message.content;
