@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   }
 
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const openRouterApiKey = process.env.GEMINI_API_KEY; // Берём новый API-ключ OpenRouter из кабинета Vercel
 
   if (userText === '/start') {
     await sendTelegramMessage(chatId, "Привет! Я умный помощник детской модельной школы развития. Задайте мне любой вопрос о направлениях обучения, расписании, ценах или записи на пробное занятие.", botToken);
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const aiResponse = await getGeminiResponse(userText, geminiApiKey);
+    const aiResponse = await getOpenRouterResponse(userText, openRouterApiKey);
     await sendTelegramMessage(chatId, aiResponse, botToken);
   } catch (error) {
     console.error(error);
@@ -34,8 +34,7 @@ export default async function handler(req, res) {
   return res.status(200).send('OK');
 }
 
-async function getGeminiResponse(prompt, apiKey) {
-  // База знаний модельной школы. Ваша подруга может изменить этот текст прямо в файле на GitHub в любое время.
+async function getOpenRouterResponse(prompt, apiKey) {
   const systemInstruction = `Вы — вежливый, заботливый и профессиональный администратор детской модельной школы развития. 
 Ваша задача — отвечать на вопросы родителей и учеников. 
 Используйте только достоверную информацию из базы знаний ниже. Если вы чего-то не знаете, вежливо предложите написать администратору или позвонить по телефону.
@@ -49,35 +48,30 @@ async function getGeminiResponse(prompt, apiKey) {
 - Контакты: телефон +7 (999) 123-45-67, Instagram @example_model_school.
 - Частые вопросы: Родителям присутствовать на занятиях нельзя, чтобы дети не отвлекались. В конце каждого курса мы проводим отчетный показ и выдаем фирменный сертификат.`;
 
-  // Мы обновили ссылку на современную и поддерживаемую модель gemini-2.0-flash:
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  
-  const response = await fetch(url, {
-    method: 'POST',
+  // Запрос идет через надежный мост OpenRouter к бесплатной и стабильной модели google/gemini-2.5-flash-lite
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Authorization": `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            { text: systemInstruction },
-            { text: `Вопрос пользователя: ${prompt}` }
-          ]
-        }
+      model: "google/gemini-2.5-flash-lite",
+      messages: [
+        { role: "system", content: systemInstruction },
+        { role: "user", content: prompt }
       ]
     })
   });
 
   const data = await response.json();
   
-  console.error("ОТВЕТ ОТ GOOGLE GEMINI:", JSON.stringify(data, null, 2));
+  console.error("ОТВЕТ ОТ OPENROUTER:", JSON.stringify(data, null, 2));
 
-  if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
-    return data.candidates[0].content.parts[0].text;
+  if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+    return data.choices[0].message.content;
   }
-  throw new Error('Invalid Gemini API response');
+  throw new Error('Invalid OpenRouter API response');
 }
 
 async function sendTelegramMessage(chatId, text, token) {
