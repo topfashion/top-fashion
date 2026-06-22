@@ -56,7 +56,8 @@ async function getOpenRouterResponse(prompt, apiKey) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: "meta-llama/llama-3.1-8b-instruct:free",
+      model: "openrouter/free",
+,
       messages: [
         { role: "system", content: systemInstruction },
         { role: "user", content: prompt }
