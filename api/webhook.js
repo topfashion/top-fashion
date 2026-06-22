@@ -49,7 +49,8 @@ async function getGeminiResponse(prompt, apiKey) {
 - Контакты: телефон +7 (999) 123-45-67, Instagram @example_model_school.
 - Частые вопросы: Родителям присутствовать на занятиях нельзя, чтобы дети не отвлекались. В конце каждого курса мы проводим отчетный показ и выдаем фирменный сертификат.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  // В этой ссылке ниже мы добавили "-latest" к имени модели:
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
   
   const response = await fetch(url, {
     method: 'POST',
@@ -71,7 +72,6 @@ async function getGeminiResponse(prompt, apiKey) {
 
   const data = await response.json();
   
-  // Эта строчка напечатает точную причину ошибки в логи Vercel:
   console.error("ОТВЕТ ОТ GOOGLE GEMINI:", JSON.stringify(data, null, 2));
 
   if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
