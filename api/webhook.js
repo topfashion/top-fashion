@@ -49,8 +49,8 @@ async function getGeminiResponse(prompt, apiKey) {
 - Контакты: телефон +7 (999) 123-45-67, Instagram @example_model_school.
 - Частые вопросы: Родителям присутствовать на занятиях нельзя, чтобы дети не отвлекались. В конце каждого курса мы проводим отчетный показ и выдаем фирменный сертификат.`;
 
-  // В этой ссылке ниже мы добавили "-latest" к имени модели:
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
+  // Мы обновили ссылку на современную и поддерживаемую модель gemini-2.0-flash:
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
   
   const response = await fetch(url, {
     method: 'POST',
