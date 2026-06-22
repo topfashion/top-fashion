@@ -70,6 +70,10 @@ async function getGeminiResponse(prompt, apiKey) {
   });
 
   const data = await response.json();
+  
+  // Эта строчка напечатает точную причину ошибки в логи Vercel:
+  console.error("ОТВЕТ ОТ GOOGLE GEMINI:", JSON.stringify(data, null, 2));
+
   if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
     return data.candidates[0].content.parts[0].text;
   }
