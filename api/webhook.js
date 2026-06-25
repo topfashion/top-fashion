@@ -65,8 +65,9 @@ async function getOpenRouterResponse(prompt, apiKey) {
 - Адрес: ул. Университетская д. 11 2 этаж-вход и заезд со стороны дороги (поворот напротив Бристоля) крыльцо клиники Молекула-напротив ресторана Даги и Греки.
 - Контакты: телефон +7 (912) 817-99-99, есть тг и макс. @TopFashionService
 - Есть свое приложение с расписанием и доп. информацией https://apps.apple.com/ru/app/tfs-agency/id6744437569
-- Частые вопросы: Родителям присутствовать на занятиях нельзя, чтобы дети не отвлекались. В конце каждого курса мы проводим отчетный показ и выдаем фирменный сертификат.В конце каждого месяца проводим фотосессии.;
+- Частые вопросы: Родителям присутствовать на занятиях нельзя, чтобы дети не отвлекались. В конце каждого курса мы проводим отчетный показ и выдаем фирменный сертификат.В конце каждого месяца проводим фотосессии.`;
 
+  // Запрос отправляется к стабильной премиум-модели Llama 3.1 от Meta
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -74,7 +75,7 @@ async function getOpenRouterResponse(prompt, apiKey) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: "google/gemini-2.5-flash",
+      model: "meta-llama/llama-3.1-8b-instruct",
       messages: [
         { role: "system", content: systemInstruction },
         { role: "user", content: prompt }
@@ -84,7 +85,7 @@ async function getOpenRouterResponse(prompt, apiKey) {
 
   const data = await response.json();
   
-  console.error("ОТВЕТ ОТ ПРЕМИУМ GEMINI:", JSON.stringify(data, null, 2));
+  console.error("ОТВЕТ ОТ LLAМА:", JSON.stringify(data, null, 2));
 
   if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
     return data.choices[0].message.content;
