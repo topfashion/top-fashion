@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
   // 1. Привет! Я умный помощник школы-задайте мне вопрос (команда /start):
   if (userText === '/start') {
-    const welcomeMessage = "Привет! Я умный помощник детской модельной школы развития. Задайте мне любой вопрос о направлениях обучения, расписании, ценах или записи на пробное занятие.";
+    const welcomeMessage = "Привет! Я умный помощник детской модельной школы развития. Задайте мне любой вопрос";
     await sendTelegramMessage(chatId, welcomeMessage, botToken);
     return res.status(200).send('OK');
   }
